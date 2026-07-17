@@ -1,0 +1,121 @@
+# Blue Hub 子模型参数配置
+# 说明：
+# - 本文件是模型运行参数入口，修改数值即可替换为真实调研/报价/合同参数。
+# - 比例类参数使用小数表示，例如 0.08 表示 8%。
+# - 光缆只约束算力服务交付能力，不表示电力传输。
+
+# 单个调度步长，单位：小时。当前示例为 1 小时。
+time_step_h: 1.0
+
+# 海上功率平衡残差容忍度，单位：MW。用于判断功率平衡是否闭合。
+power_balance_tolerance_mw: 0.000001
+
+# 电力-海底电缆外送链路参数
+power_export:
+  # 海底电缆最大外送功率，单位：MW。
+  cable_capacity_mw: 700.0
+
+  # 陆上登陆点/电网最大接纳功率，单位：MW。
+  grid_accept_max_mw: 450.0
+
+  # 海缆输电损耗率，单位：比例。实际送达功率 = 外送功率 * (1 - 损耗率)。
+  cable_loss_fraction: 0.08
+
+  # 电力外送结算电价，单位：元/kWh。收入按实际送达电量计算。
+  price_power_cny_per_kwh: 0.35
+
+  # 电力外送变动成本，单位：元/MWh-送出电量。
+  variable_cost_cny_per_mwh_send: 5.0
+
+  # 海底电缆单位长度投资成本，单位：元/km。
+  cable_capex_cny_per_km: 10000000.0
+
+  # 海底电缆送出距离，单位：km。
+  cable_distance_km: 200.0
+
+  # 换流站、升压站或其他电力外送配套一次性投资，单位：元。
+  converter_cost_cny: 0.0
+
+  # 海缆系统年运维成本率，单位：比例/年。用于年化成本估算。
+  om_cable_fraction_per_year: 0.02
+
+# 算力-光缆输出链路参数
+compute:
+  # 数据中心设施侧最大用电功率，单位：MW。包含 IT、冷却、供配电等设施负荷。
+  compute_power_max_mw: 120.0
+
+  # 数据中心在线时的最小设施用电功率，单位：MW。低于该值会被标记为低负荷运行。
+  compute_power_min_mw: 10.0
+
+  # 数据中心 PUE。IT 功率 = 设施总功率 / PUE。
+  pue: 1.15
+
+  # 光缆/服务链路可交付的最大 IT 服务功率，单位：MW-IT。
+  fiber_service_capacity_mw_it: 120.0
+
+  # 光缆最大带宽，单位：Gbps。当前模型记录该能力参数，主要用于约束和报告口径。
+  fiber_bandwidth_max_gbps: 800.0
+
+  # 光缆传输延迟，单位：ms。用于判断业务类型适配性。
+  fiber_latency_ms: 20.0
+
+  # 算力服务结算价格，单位：元/MWh-IT。
+  price_compute_cny_per_mwh_it: 1500.0
+
+  # 算力服务变动成本，单位：元/MWh-IT。
+  variable_cost_cny_per_mwh_it: 20.0
+
+# 制氢-储氢-管道/船运输出链路参数
+hydrogen:
+  # 电解槽最大用电功率，单位：MW。
+  electrolyzer_power_max_mw: 150.0
+
+  # 制氢系统综合电耗，单位：kWh/kg-H2。已包含电解及边界内辅助电耗。
+  sec_kwh_per_kg: 57.5
+
+  # 管道最大输氢能力，单位：kg/h。
+  pipe_capacity_kg_per_h: 1800.0
+
+  # 船运等效最大输氢能力，单位：kg/h。当前模型不做逐航次调度。
+  ship_capacity_kg_per_h: 1200.0
+
+  # 最大储氢库存，单位：kg。
+  storage_max_kg: 30000.0
+
+  # 管道输氢损耗率，单位：比例。管道交付量 = 管道输出量 * (1 - 损耗率)。
+  pipe_loss_fraction: 0.01
+
+  # 船运输氢损耗率，单位：比例。船运交付量 = 船运输出量 * (1 - 损耗率)。
+  ship_loss_fraction: 0.02
+
+  # 氢气交付结算价格，单位：元/kg-H2。收入按扣除损耗后的交付量计算。
+  price_h2_cny_per_kg: 30.0
+
+  # 管道输氢变动运输成本，单位：元/kg-管道输出量。
+  pipe_transport_cost_cny_per_kg: 1.5
+
+  # 船运输氢变动运输成本，单位：元/kg-船运输出量。
+  ship_transport_cost_cny_per_kg: 3.0
+
+  # 电解制氢变动成本，单位：元/kg-产氢量。不含电力机会成本。
+  electrolyzer_variable_cost_cny_per_kg: 0.5
+
+# 海洋综合用能/岛上辅助负荷参数
+marine:
+  # 岛上基础辅助负荷，单位：MW。
+  aux_load_mw: 8.0
+
+  # 海水淡化负荷，单位：MW。
+  desal_load_mw: 4.0
+
+  # 海洋装备、平台设备或其他生产辅助负荷，单位：MW。
+  equipment_load_mw: 6.0
+
+  # 海洋综合负荷中可柔性调整的比例，单位：比例。其余部分视为刚性负荷。
+  flexible_fraction: 0.30
+
+  # 海洋负荷被满足时的价值，单位：元/MWh-供电量。若只做保供约束可设为 0。
+  value_cny_per_mwh_served: 0.0
+
+  # 海洋负荷未满足时的惩罚成本，单位：元/MWh-缺供量。
+  unmet_penalty_cny_per_mwh: 10000.0

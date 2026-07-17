@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Minimal auditable submodels for Blue Hub power export, compute, hydrogen, marine load, and integrated balance."
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["PyYAML>=6.0"]
 
 [build-system]
 requires = ["hatchling"]
