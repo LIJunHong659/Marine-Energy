@@ -1,8 +1,0 @@
-{
-  "configuration_hash": "df1000f996ad4df4d9fbf75122dd0e2038024b6093e1b94272965340e9a844dc",
-  "generator": "deterministic_synthetic_v1",
-  "hours": 24,
-  "model_version": "0.4.0",
-  "scenario_id": "base",
-  "start": "2026-01-01 00:00:00+08:00"
-}

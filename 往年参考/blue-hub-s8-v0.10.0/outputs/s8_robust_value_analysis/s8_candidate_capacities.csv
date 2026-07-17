@@ -1,7 +1,0 @@
-candidate_id,candidate_scope,strategy,battery_power_mw,battery_energy_mwh,electrolyzer_power_mw,hydrogen_storage_kg,fuel_cell_power_mw,compute_it_capacity_mw,subsea_fiber_service_capacity_mw_it,hydrogen_export_capacity_kg_per_h
-direct,merchant_risk_set,direct_existing,0,0,0,0,0,0,0,0
-compute_led,merchant_risk_set,compute_led,0,0,0,0,0,136.5,136.5,0
-hydrogen_led,merchant_risk_set,hydrogen_led,0,0,308.7479476,36089.98728,0,0,0,4025.552976
-integrated_contract,merchant_risk_set,integrated_contract,0,0,152.9901622,26467.23137,0,136.5,136.5,1877.120574
-diversified_hedge,merchant_risk_set,diversified_hedge,0,0,308.7479476,36089.98728,0,136.5,136.5,4025.552976
-reliability_reserve,stress_only,reliability_reserve,0,0,18.7443759,1500000,38.83645526,0,0,0

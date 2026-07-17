@@ -1,7 +1,0 @@
-case_id,wind_full_load_hours,resource_phase_hours,available_landing_limit_mw,electricity_price_multiplier,compute_price_cny_per_mwh_it,compute_flexible_fraction,hydrogen_price_cny_per_kg,scenario_weight,interpretation
-reference,3300,0,450,1.00,2000,0.35,30,0.25,Reference commercial year
-low_wind,2850,72,450,1.05,1900,0.35,30,0.15,Lower resource with moderately higher power value
-grid_tight,3300,168,300,0.95,2000,0.35,30,0.15,Temporary mainland landing derating
-compute_soft,3300,264,450,1.00,1200,0.15,30,0.15,Weak compute contract and smaller portable workload pool
-hydrogen_soft,3300,360,450,1.00,2000,0.35,20,0.15,Weak delivered-hydrogen price
-upside,3600,456,550,1.15,2400,0.60,35,0.15,Stronger resource grid access and flexible contracts
