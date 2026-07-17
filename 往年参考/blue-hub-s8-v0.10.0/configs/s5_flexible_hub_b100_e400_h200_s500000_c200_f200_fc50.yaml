@@ -1,0 +1,17 @@
+config_id: S5_B100_E400_H200_S500000_C200_F200_FC50
+wind_capacity_mw: 1000.0
+pv_capacity_mw: 0.0
+tx_capacity_mw: 700.0
+battery_power_mw: 100.0
+battery_energy_mwh: 400.0
+electrolyzer_power_mw: 200.0
+hydrogen_storage_kg: 500000.0
+compute_it_capacity_mw: 200.0
+subsea_fiber_service_capacity_mw_it: 200.0
+fuel_cell_power_mw: 50.0
+initial_battery_soc_fraction: 0.5
+initial_hydrogen_inventory_fraction: 0.5
+tx_technology: hvdc
+export_policy: economic
+battery_reserve_power_mw: 0.0
+battery_reserve_duration_h: 0.0

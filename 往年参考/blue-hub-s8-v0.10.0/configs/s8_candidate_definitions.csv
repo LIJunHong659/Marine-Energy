@@ -1,0 +1,7 @@
+candidate_id,candidate_scope,design_source,compute_price_cny_per_mwh_it,hydrogen_price_cny_per_kg,description
+direct,merchant_risk_set,zero_flexible_assets,0,0,Direct electricity export without hub-common or flexible assets
+compute_led,merchant_risk_set,audited_S7_contract_frontier,2000,20,Compute-led fixed design from the S7 design year
+hydrogen_led,merchant_risk_set,audited_S7_contract_frontier,1000,30,Hydrogen-led fixed design from the S7 design year
+integrated_contract,merchant_risk_set,audited_S7_contract_frontier,2000,30,Joint compute and hydrogen fixed design from the S7 design year
+diversified_hedge,merchant_risk_set,componentwise_max_compute_and_hydrogen,0,0,Conservative union of compute-led and hydrogen-led capacities
+reliability_reserve,stress_only,audited_S7_30day_reliability_case,0,0,Hydrogen storage and fuel-cell design for low-wind critical-load support

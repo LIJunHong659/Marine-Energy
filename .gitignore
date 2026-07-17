@@ -1,0 +1,4 @@
+/.agent
+/.pycache
+/submodules/.venv
+/submodules/src/bluehub_submodules/__pycache__

@@ -1,0 +1,81 @@
+{
+  "phase": "S8",
+  "model_version": "0.10.0",
+  "simulation_hours": 8760,
+  "method": {
+    "capacity_risk": "fixed capacity replay across six weighted operating cases",
+    "tail_probability": 0.2,
+    "risk_aversion": 0.35,
+    "contract_compute_prices_cny_per_mwh_it": [
+      1000.0,
+      1250.0,
+      1500.0,
+      1750.0,
+      2000.0,
+      2250.0,
+      2500.0
+    ],
+    "contract_hydrogen_prices_cny_per_kg": [
+      20.0,
+      25.0,
+      30.0,
+      35.0
+    ],
+    "landing_frontier_mw": [
+      300.0,
+      375.0,
+      450.0,
+      525.0,
+      600.0,
+      700.0
+    ],
+    "low_wind_duration_days": [
+      7,
+      15,
+      30,
+      60
+    ]
+  },
+  "source_files": {
+    "configs/s7_china_evidence_register.csv": "1510b022d16b8589e406eebe55b86cc5940f99cb55b616ff24747aea70265387",
+    "configs/s7_china_flexible_cost_cases.csv": "e1370bf65c97ea2a1688bdfab7a409aa469280394954d8e67954e3883f3e18bd",
+    "configs/s7_china_infrastructure_cost_cases.csv": "6413a2c5f362466fcfae8fe021bc3269549e6f2c1ac44eac177cbe6f04885eba",
+    "configs/s7_china_planning_limits.yaml": "48d6abf013c6dc93208d8efecbe4171232e2a2b7a93a7a20d8d88ef1478d6e18",
+    "configs/s8_risk_cases.csv": "0b67fa39cda131464cdcf2be88909702683ae7f1bd8ab5f34c6c96eb0291a7e8",
+    "configs/s8_analysis_settings.yaml": "1d2626359ba8dd4a56d084aff0a50a28b5068f4d8c43bbe63de70577121c8572",
+    "configs/s8_candidate_definitions.csv": "82e9c66a6d15f0cd5258aa747441c549f59b6d1de59d63aa2290521f614b3e98"
+  },
+  "output_files": {
+    "figures/s8_contract_value_surface.png": "6c588a24a159189df2984648f8f482a7fbdff2963958ff69b11d2f45b0d6b1b1",
+    "figures/s8_landing_flexibility_frontier.png": "1315ef19911a64654476281577e49f2aa795291a2b80ab3305c9ad6e6d9793f6",
+    "figures/s8_low_wind_duration_reliability.png": "b4a37b185c664ef0d47a520c16e891ffe70b802a6f712bdc83effc818e2648fb",
+    "figures/s8_risk_aversion_frontier.png": "382d1e03d721122f5ea6fe30e712a13aa382f1dfd0d80369fd0cebb15c8a79b2",
+    "figures/s8_risk_return.png": "ca8b9e43a51f39cea1461a82ea315ad884b731203c84076300e86e0efea9cfc4",
+    "s8_candidate_capacities.csv": "d5da96ba16ee6fbb8eb939898772a59796ce7c4dd591b3c8ce7be2a55d4d4da2",
+    "s8_candidate_design_year_results.csv": "95c7033e8a31c3a865e33b73fc738d62196f71f9d17af7fe3d1db4b10cd12153",
+    "s8_candidate_risk_summary.csv": "7d73d0b881220747ff55ff155d581b2a0a7dbbafacecc85867dd4596ec5d983d",
+    "s8_candidate_scenario_ledger.csv": "b2cee39e814ec26b61b37345f51f7a5ac3d48bc273157d3a0e29d8ca631d314a",
+    "s8_contract_candidate_ledger.csv": "36b50f2d7c6dd958c740310f2b7f74943d98fae734ab03ac75ab96f2b8bd74aa",
+    "s8_contract_thresholds.csv": "bf522d0e081672427e12419c3edb40c36f767f37784cf911c4cffb4a23b6740a",
+    "s8_contract_value_surface.csv": "89272e38b8b1d02ffc6fae58486857452331e0316745262b04ca03dbc6e22374",
+    "s8_landing_capacity_substitution.csv": "26d51e04e06aed7652ae19215ad81dea360026ef6cc47fe2060d09d16850d0ee",
+    "s8_landing_flexibility_frontier.csv": "9b90060dd8a51aa5aa7275dc189656b7ec0f4948940cd49cb6d0eaed8bfe2b2f",
+    "s8_low_wind_duration_reliability.csv": "aa4ce56d33f363bc07f96e9baeab6d6ebd03e6399ac7d81531378ba586aa27f5",
+    "s8_risk_aversion_frontier.csv": "5f72b78f24df7f02047444b0e1e95c860d32a7defe5a12d4ec03ba4c141ba36a",
+    "s8_risk_metadata.json": "c6fe90190941a46108ae41a0a5bf5eb44355580334bbe983e34d0cc2dc9f50e0",
+    "s8_validation_summary.json": "de2f88f08de89fd4642ee40c50e89173dac1443c70dcbe79b63c2e944cecbc3e"
+  },
+  "limitations": [
+    "All operating profiles remain deterministic synthetic screening cases.",
+    "Candidate selection is discrete and is not a continuous two-stage stochastic optimum.",
+    "Dispatch retains perfect foresight within each scenario.",
+    "Scenario weights are transparent planning judgements rather than estimated probabilities.",
+    "Reliability stress cases are kept outside merchant expected-value weights.",
+    "Project-grade conclusions require site weather, landing-grid data, quotations and contracts."
+  ],
+  "result_audit": {
+    "script": "scripts/audit_s8_results.py",
+    "all_passed": true,
+    "maximum_balance_residual_mw": 5.6843418860000007e-14
+  }
+}

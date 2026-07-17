@@ -1,0 +1,7 @@
+hub_landing_grid_limit_mw,hub_utilization_rate,equivalent_direct_landing_grid_limit_mw,landing_capacity_substitution_mw,attainable_by_landing_expansion_with_700mw_cable
+300,0.9912244129,695.4557375,395.4557375,True
+375,0.9979403529,,,False
+450,0.9998150479,,,False
+525,1,,,False
+600,1,,,False
+700,1,,,False

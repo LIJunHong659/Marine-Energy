@@ -1,0 +1,6 @@
+battery_power_mw: 300.0
+battery_energy_mwh: 2400.0
+electrolyzer_power_mw: 400.0
+hydrogen_storage_kg: 1500000.0
+fuel_cell_power_mw: 100.0
+compute_it_capacity_mw: 400.0
