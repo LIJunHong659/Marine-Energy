@@ -1,4 +1,7 @@
 /.agent
-/.pycache
-/submodules/.venv
-/submodules/src/bluehub_submodules/__pycache__
+/temp
+# Local cache and virtualenv artifacts
+/.uv-cache/
+**/__pycache__/
+**/.pycache/
+**/.venv/
