@@ -12,18 +12,37 @@ from .parameters import ModelParameters, default_parameters
 @dataclass(frozen=True)
 class HourlyScenario:
     hour: int
-    available_power_mw: float
+    source_available_power_mw: float
+
+    @property
+    def available_power_mw(self) -> float:
+        """Backward-compatible alias for source_available_power_mw."""
+
+        return self.source_available_power_mw
 
 
-def generate_typical_day(base_mw: float = 220.0, amplitude_mw: float = 90.0) -> list[HourlyScenario]:
-    """Generate a deterministic 24h renewable-power profile for testing."""
+def generate_typical_day(
+    source_capacity_mw: float = 40.0,
+    base_fraction: float = 0.70,
+    amplitude_fraction: float = 0.30,
+) -> list[HourlyScenario]:
+    """Generate a deterministic 24h source-side profile for interface tests."""
 
+    if source_capacity_mw <= 0:
+        raise ValueError("source_capacity_mw must be positive.")
+    if base_fraction < 0 or amplitude_fraction < 0:
+        raise ValueError("base_fraction and amplitude_fraction must be non-negative.")
+
+    base_mw = source_capacity_mw * base_fraction
+    amplitude_mw = source_capacity_mw * amplitude_fraction
     rows: list[HourlyScenario] = []
     for hour in range(24):
         wind_shape = 0.6 + 0.4 * math.sin((hour - 4) * math.pi / 12.0) ** 2
         solar_shape = max(0.0, math.sin((hour - 6) * math.pi / 12.0))
         available = base_mw * wind_shape + amplitude_mw * solar_shape
-        rows.append(HourlyScenario(hour=hour, available_power_mw=round(available, 6)))
+        rows.append(
+            HourlyScenario(hour=hour, source_available_power_mw=round(available, 6))
+        )
     return rows
 
 
@@ -39,30 +58,34 @@ def simple_greedy_dispatch(
     """
 
     params = default_parameters() if params is None else params
-    scenario = generate_typical_day() if scenario is None else scenario
+    scenario = (
+        generate_typical_day(params.case.source_capacity_mw)
+        if scenario is None
+        else scenario
+    )
     storage_kg = 0.0
     results: list[IntegratedResult] = []
 
     for row in scenario:
-        remaining = row.available_power_mw
+        remaining = row.source_available_power_mw
         marine_mw = min(params.marine.total_load_mw, remaining)
         remaining -= marine_mw
 
         post_marine = remaining
-        grid_mw = min(
-            post_marine * 0.55,
-            params.power_export.cable_capacity_mw,
-            params.power_export.grid_accept_max_mw,
-        )
-        remaining -= grid_mw
-
-        compute_target_mw = post_marine * 0.30
+        compute_target_mw = post_marine * 0.40
         compute_mw = min(remaining, compute_target_mw, params.compute.compute_power_max_mw)
         if 0.0 < compute_mw < params.compute.compute_power_min_mw <= remaining:
             compute_mw = params.compute.compute_power_min_mw
         elif 0.0 < compute_mw < params.compute.compute_power_min_mw:
             compute_mw = 0.0
         remaining -= compute_mw
+
+        grid_mw = min(
+            remaining * 0.45,
+            params.power_export.cable_capacity_mw,
+            params.power_export.grid_accept_max_mw,
+        )
+        remaining -= grid_mw
 
         h2_mw = min(max(remaining, 0.0), params.hydrogen.electrolyzer_power_max_mw)
         remaining -= h2_mw
@@ -83,7 +106,7 @@ def simple_greedy_dispatch(
         )
         result = evaluate_integrated_hour(
             row.hour,
-            row.available_power_mw,
+            row.source_available_power_mw,
             storage_kg,
             request,
             params,

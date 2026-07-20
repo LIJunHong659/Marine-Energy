@@ -1,0 +1,60 @@
+case:
+  case_id: common_case_v1
+  scenario_type: interface_smoke
+  timezone: Asia/Shanghai
+  site_id: SITE_REF_V1
+  source_capacity_mw: 40.0
+  evaluation_year: 2026
+  operation_year_label: Y0
+  evaluation_life_years: 25
+  random_seed: 42
+
+time_step_h: 1.0
+power_balance_tolerance_mw: 0.000001
+
+battery:
+  bess_power_mw: 0.0
+  bess_energy_mwh: 0.0
+  roundtrip_efficiency: 0.90
+
+power_export:
+  cable_capacity_mw: 700.0
+  grid_accept_max_mw: 450.0
+  cable_loss_fraction: 0.08
+  price_power_cny_per_kwh: 0.35
+  variable_cost_cny_per_mwh_send: 5.0
+  cable_capex_cny_per_km: 10000000.0
+  cable_distance_km: 200.0
+  converter_cost_cny: 0.0
+  om_cable_fraction_per_year: 0.02
+
+compute:
+  compute_power_max_mw: 120.0
+  compute_power_min_mw: 10.0
+  pue: 1.15
+  fiber_service_capacity_mw_it: 120.0
+  fiber_bandwidth_max_gbps: 800.0
+  fiber_latency_ms: 20.0
+  price_compute_cny_per_mwh_it: 1500.0
+  variable_cost_cny_per_mwh_it: 20.0
+
+hydrogen:
+  electrolyzer_power_max_mw: 150.0
+  sec_kwh_per_kg: 57.5
+  pipe_capacity_kg_per_h: 1800.0
+  ship_capacity_kg_per_h: 1200.0
+  storage_max_kg: 30000.0
+  pipe_loss_fraction: 0.01
+  ship_loss_fraction: 0.02
+  price_h2_cny_per_kg: 30.0
+  pipe_transport_cost_cny_per_kg: 1.5
+  ship_transport_cost_cny_per_kg: 3.0
+  electrolyzer_variable_cost_cny_per_kg: 0.5
+
+marine:
+  aux_load_mw: 8.0
+  desal_load_mw: 4.0
+  equipment_load_mw: 6.0
+  flexible_fraction: 0.30
+  value_cny_per_mwh_served: 0.0
+  unmet_penalty_cny_per_mwh: 10000.0

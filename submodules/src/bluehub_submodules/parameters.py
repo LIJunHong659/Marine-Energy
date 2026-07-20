@@ -15,9 +15,61 @@ T = TypeVar("T")
 
 
 @dataclass(frozen=True)
+class CaseMetadata:
+    """Frozen metadata shared by all integrated runs."""
+
+    case_id: str = "common_case_v1"
+    scenario_type: str = "interface_smoke"
+    timezone: str = "Asia/Shanghai"
+    site_id: str = "SITE_REF_V1"
+    source_capacity_mw: float = 40.0
+    evaluation_year: int = 2026
+    operation_year_label: str = "Y0"
+    evaluation_life_years: int = 25
+    random_seed: int = 42
+
+    def validate(self) -> None:
+        if self.case_id != "common_case_v1":
+            raise ValueError("case_id must be common_case_v1.")
+        if self.scenario_type not in {"interface_smoke", "engineering_base"}:
+            raise ValueError("scenario_type must be interface_smoke or engineering_base.")
+        if not self.timezone:
+            raise ValueError("timezone must be non-empty.")
+        if not self.site_id:
+            raise ValueError("site_id must be non-empty.")
+        if self.source_capacity_mw <= 0:
+            raise ValueError("source_capacity_mw must be positive.")
+        if self.evaluation_year <= 0:
+            raise ValueError("evaluation_year must be positive.")
+        if not self.operation_year_label:
+            raise ValueError("operation_year_label must be non-empty.")
+        if self.evaluation_life_years <= 0:
+            raise ValueError("evaluation_life_years must be positive.")
+        if self.random_seed < 0:
+            raise ValueError("random_seed must be non-negative.")
+
+
+@dataclass(frozen=True)
+class BatteryParams:
+    """BESS capacity metadata reserved for 4.5 integration."""
+
+    bess_power_mw: float = 0.0
+    bess_energy_mwh: float = 0.0
+    roundtrip_efficiency: float = 0.90
+
+    def validate(self) -> None:
+        if self.bess_power_mw < 0 or self.bess_energy_mwh < 0:
+            raise ValueError("BESS power and energy capacity must be non-negative.")
+        if not 0 < self.roundtrip_efficiency <= 1:
+            raise ValueError("roundtrip_efficiency must be in (0, 1].")
+
+
+@dataclass(frozen=True)
 class ModelParameters:
     """Grouped parameter set used by the integrated model."""
 
+    case: CaseMetadata = field(default_factory=CaseMetadata)
+    battery: BatteryParams = field(default_factory=BatteryParams)
     power_export: PowerExportParams = field(default_factory=PowerExportParams)
     compute: ComputeLoadParams = field(default_factory=ComputeLoadParams)
     hydrogen: HydrogenParams = field(default_factory=HydrogenParams)
@@ -28,6 +80,8 @@ class ModelParameters:
     def validate(self) -> None:
         """Raise ValueError if basic parameter units or ranges are invalid."""
 
+        self.case.validate()
+        self.battery.validate()
         if self.time_step_h <= 0:
             raise ValueError("time_step_h must be positive.")
         if self.power_balance_tolerance_mw <= 0:
@@ -58,6 +112,8 @@ def parameters_from_mapping(data: Mapping[str, Any]) -> ModelParameters:
 
     The expected shape is a nested mapping with these top-level sections:
 
+    case
+    battery
     power_export
     compute
     hydrogen
@@ -69,6 +125,8 @@ def parameters_from_mapping(data: Mapping[str, Any]) -> ModelParameters:
     """
 
     allowed_top_level_keys = {
+        "case",
+        "battery",
         "power_export",
         "compute",
         "hydrogen",
@@ -82,6 +140,8 @@ def parameters_from_mapping(data: Mapping[str, Any]) -> ModelParameters:
         raise ValueError(f"parameter mapping has unknown keys: {joined}.")
 
     params = ModelParameters(
+        case=_load_dataclass_section("case", data.get("case"), CaseMetadata),
+        battery=_load_dataclass_section("battery", data.get("battery"), BatteryParams),
         power_export=_load_dataclass_section(
             "power_export", data.get("power_export"), PowerExportParams
         ),

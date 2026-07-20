@@ -25,13 +25,18 @@ SUMMARY_LABELS = {
     "violation_count": "Violation count / 违规次数",
 }
 
-CONFIG_PATH = Path(__file__).resolve().parents[1] / "configs" / "parameters.yaml"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+COMMON_CASE_PATH = (
+    PROJECT_ROOT / "4.1边界与口径" / "common_case_v1" / "common_case_v1.yaml"
+)
+LEGACY_CONFIG_PATH = Path(__file__).resolve().parents[1] / "configs" / "parameters.yaml"
 
 
 def load_example_parameters() -> ModelParameters:
-    # Keep the example runnable even if the config file was renamed or removed.
-    if CONFIG_PATH.exists():
-        return load_parameters_from_file(CONFIG_PATH)
+    if COMMON_CASE_PATH.exists():
+        return load_parameters_from_file(COMMON_CASE_PATH)
+    if LEGACY_CONFIG_PATH.exists():
+        return load_parameters_from_file(LEGACY_CONFIG_PATH)
     return default_parameters()
 
 
@@ -39,6 +44,10 @@ def main() -> None:
     params = load_example_parameters()
     results = simple_greedy_dispatch(params)
     summary = summarize_results(results)
+    print(f"Case ID / 参数集: {params.case.case_id}")
+    print(f"Scenario / 场景: {params.case.scenario_type}")
+    print(f"Site / 场址: {params.case.site_id}")
+    print(f"Timezone / 时区: {params.case.timezone}")
     for key, value in summary.items():
         print(f"{SUMMARY_LABELS.get(key, key)}: {value}")
 

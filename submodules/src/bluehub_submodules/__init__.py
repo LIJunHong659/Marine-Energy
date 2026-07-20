@@ -11,6 +11,8 @@ from .hydrogen_output import HydrogenParams, HydrogenResult, evaluate_hydrogen_o
 from .marine_load import MarineLoadParams, MarineLoadResult, evaluate_marine_load
 from .objectives import ObjectiveBreakdown, calculate_objective_breakdown
 from .parameters import (
+    BatteryParams,
+    CaseMetadata,
     ModelParameters,
     default_parameters,
     load_parameters_from_file,
@@ -23,6 +25,8 @@ from .scenario import generate_typical_day, simple_greedy_dispatch
 __all__ = [
     "ComputeLoadParams",
     "ComputeLoadResult",
+    "BatteryParams",
+    "CaseMetadata",
     "DispatchRequest",
     "HydrogenParams",
     "HydrogenResult",

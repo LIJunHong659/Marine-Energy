@@ -4,11 +4,29 @@
 # - 比例类参数使用小数表示，例如 0.08 表示 8%。
 # - 光缆只约束算力服务交付能力，不表示电力传输。
 
+# 公共案例元数据。联合运行结果必须携带这些字段。
+case:
+  case_id: common_case_v1
+  scenario_type: interface_smoke
+  timezone: Asia/Shanghai
+  site_id: SITE_REF_V1
+  source_capacity_mw: 40.0
+  evaluation_year: 2026
+  operation_year_label: Y0
+  evaluation_life_years: 25
+  random_seed: 42
+
 # 单个调度步长，单位：小时。当前示例为 1 小时。
 time_step_h: 1.0
 
 # 海上功率平衡残差容忍度，单位：MW。用于判断功率平衡是否闭合。
 power_balance_tolerance_mw: 0.000001
+
+# 电池储能容量口径。当前只用于接口边界校验，SOC 动态模型后续接入 4.5。
+battery:
+  bess_power_mw: 0.0
+  bess_energy_mwh: 0.0
+  roundtrip_efficiency: 0.90
 
 # 电力-海底电缆外送链路参数
 power_export:

@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from .hydrogen_output import HydrogenResult
 from .marine_load import MarineLoadResult, evaluate_marine_load
 from .objectives import ObjectiveBreakdown, calculate_objective_breakdown
-from .parameters import ModelParameters
+from .parameters import CaseMetadata, ModelParameters
 from .power_export import PowerExportResult, evaluate_power_export
 from .compute_load import ComputeLoadResult, evaluate_compute_load
 from .hydrogen_output import evaluate_hydrogen_output
@@ -30,11 +30,15 @@ class DispatchRequest:
 
 @dataclass(frozen=True)
 class IntegratedResult:
+    case: CaseMetadata
+    time_step_h: float
     hour: int
-    available_power_mw: float
+    source_available_power_mw: float
     storage_start_kg: float
     storage_end_kg: float
     request: DispatchRequest
+    storage_charge_mw: float
+    storage_discharge_mw: float
     power_export: PowerExportResult
     compute: ComputeLoadResult
     hydrogen: HydrogenResult
@@ -43,6 +47,12 @@ class IntegratedResult:
     offshore_balance_residual_mw: float
     objective: ObjectiveBreakdown
     violations: tuple[str, ...] = field(default_factory=tuple)
+
+    @property
+    def available_power_mw(self) -> float:
+        """Backward-compatible alias for the source-side available power."""
+
+        return self.source_available_power_mw
 
 
 def evaluate_integrated_hour(
@@ -63,8 +73,25 @@ def evaluate_integrated_hour(
     violations: list[str] = []
     if available_power_mw < 0:
         violations.append("P_available,t must be non-negative.")
+    if request.storage_charge_mw < 0 or request.storage_discharge_mw < 0:
+        violations.append("BESS charge/discharge power must be non-negative.")
+    if request.storage_charge_mw > params.battery.bess_power_mw:
+        violations.append("P_BESS_ch exceeds bess_power_mw.")
+    if request.storage_discharge_mw > params.battery.bess_power_mw:
+        violations.append("P_BESS_dis exceeds bess_power_mw.")
+    if request.storage_charge_mw > 0 and request.storage_discharge_mw > 0:
+        violations.append("BESS cannot charge and discharge in the same time step.")
 
-    marine_available_mw = max(available_power_mw + request.storage_discharge_mw, 0.0)
+    storage_charge_mw = min(
+        max(request.storage_charge_mw, 0.0),
+        params.battery.bess_power_mw,
+    )
+    storage_discharge_mw = min(
+        max(request.storage_discharge_mw, 0.0),
+        params.battery.bess_power_mw,
+    )
+
+    marine_available_mw = max(available_power_mw + storage_discharge_mw, 0.0)
     marine = evaluate_marine_load(
         marine_available_mw,
         params.marine,
@@ -95,9 +122,9 @@ def evaluate_integrated_hour(
         + power_export.exported_power_mw
         + compute.facility_power_mw
         + hydrogen.electrolyzer_power_mw
-        + max(request.storage_charge_mw, 0.0)
+        + storage_charge_mw
     )
-    supplied_power_mw = max(available_power_mw, 0.0) + max(request.storage_discharge_mw, 0.0)
+    supplied_power_mw = max(available_power_mw, 0.0) + storage_discharge_mw
     if request.curtailment_mw is None:
         curtailment_mw = max(supplied_power_mw - used_power_mw, 0.0)
     else:
@@ -126,11 +153,15 @@ def evaluate_integrated_hour(
     violations.extend(hydrogen.violations)
 
     return IntegratedResult(
+        case=params.case,
+        time_step_h=dt,
         hour=hour,
-        available_power_mw=available_power_mw,
+        source_available_power_mw=available_power_mw,
         storage_start_kg=storage_start_kg,
         storage_end_kg=hydrogen.storage_end_kg,
         request=request,
+        storage_charge_mw=storage_charge_mw,
+        storage_discharge_mw=storage_discharge_mw,
         power_export=power_export,
         compute=compute,
         hydrogen=hydrogen,
@@ -148,15 +179,20 @@ def summarize_results(results: list[IntegratedResult]) -> dict[str, float]:
     total = ObjectiveBreakdown()
     for result in results:
         total = total + result.objective
+    total_hours = sum(r.time_step_h for r in results)
     return {
-        "hours": float(len(results)),
-        "export_sent_mwh": sum(r.power_export.exported_power_mw for r in results),
-        "export_delivered_mwh": sum(r.power_export.delivered_power_mw for r in results),
+        "hours": total_hours,
+        "export_sent_mwh": sum(
+            r.power_export.exported_power_mw * r.time_step_h for r in results
+        ),
+        "export_delivered_mwh": sum(
+            r.power_export.delivered_power_mw * r.time_step_h for r in results
+        ),
         "compute_service_mwh_it": sum(r.compute.service_mwh_it for r in results),
         "hydrogen_produced_kg": sum(r.hydrogen.produced_kg for r in results),
         "hydrogen_delivered_kg": sum(r.hydrogen.delivered_kg for r in results),
-        "marine_served_mwh": sum(r.marine.served_power_mw for r in results),
-        "curtailment_mwh": sum(r.curtailment_mw for r in results),
+        "marine_served_mwh": sum(r.marine.served_power_mw * r.time_step_h for r in results),
+        "curtailment_mwh": sum(r.curtailment_mw * r.time_step_h for r in results),
         "operating_margin_cny": total.operating_margin_cny,
         "total_revenue_cny": total.total_revenue_cny,
         "total_cost_cny": total.total_cost_cny,
@@ -166,4 +202,3 @@ def summarize_results(results: list[IntegratedResult]) -> dict[str, float]:
         ),
         "violation_count": float(sum(len(r.violations) for r in results)),
     }
-

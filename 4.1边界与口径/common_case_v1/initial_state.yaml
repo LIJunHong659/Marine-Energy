@@ -1,0 +1,10 @@
+case_id: common_case_v1
+time_index_start: 0
+bess_soc_mwh: 0.0
+h2_storage_kg: 0.0
+compute_queue_mwh_it: 0.0
+source_online: true
+bess_online: true
+electrolyzer_online: true
+compute_online: true
+cable_online: true

@@ -12,6 +12,14 @@
 
 当前版本是“可审计子模型”，不是完整优化求解器。它用于把公式、参数、约束和收益口径先跑通，后续可以接 Pyomo、CVXPY 或其他优化器。
 
+联合运行优先读取根目录的公共案例参数包：
+
+```text
+4.1边界与口径/common_case_v1/common_case_v1.yaml
+```
+
+`submodules/configs/parameters.yaml` 仍作为兼容入口保留；公共案例参数包缺失时，示例程序才会回退到该文件。
+
 ## 目录结构
 
 ```text
